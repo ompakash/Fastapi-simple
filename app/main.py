@@ -6,7 +6,12 @@ from random import randrange
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import time
-
+from . import models
+from .database import engine, get_db
+from .models import Base
+models.Base.metadata.create_all(bind=engine)
+from sqlalchemy.orm import Session
+from fastapi import Depends
 
 app = FastAPI()
 
@@ -44,6 +49,10 @@ def find_index_post(id):
 @app.get("/")
 def read_root():
     return {"message": "World is good"}
+
+@app.get("/sqlalchemy")
+def test_posts(db:Session = Depends(get_db)):
+    return {'status' : 'success'}
 
 @app.get("/posts")
 def get_posts():
